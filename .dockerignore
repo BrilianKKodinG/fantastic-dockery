@@ -1,0 +1,3 @@
+venv    # write here those file which you want to ignore copy
+.venv
+.git

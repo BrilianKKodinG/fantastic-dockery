@@ -1,0 +1,29 @@
+version: "3.8"    # This is the docker-compose file version we are using 3.8
+
+services:         # We compose all services in docker-compose under the services
+  backend:        # name of the services
+    env_file:     # pass the env file if we want to pass the variables inside docker-compose file
+      - .env
+    build:        # Set image building options
+      context: .  # Set the context to current directory we can change if we want to work in child directory but currently our application is current directory
+      dockerfile: Dockerfile # Give the path of docker file
+    ports:
+      - "5000:5000" # internel:external => we will set internal and external ports internal port is maping the port which we expose inside the container and external port to expose on this port outside the container
+    networks:   # Network option we will connect two containers through network
+      - demo    # Name of the network
+    volumes:
+      - ".:/usr/src/app/" # volumes option contain the data or files of application inside the continer
+    command: sh -c "gunicorn -b 0.0.0.0:5000 wsgi:app --log-level debug" # run the command to expose application outside word
+  redis:    # Second service starts here I give name redis
+    env_file:
+      - .env
+    image: redis  # this image is on docker hub. this is the base image
+    hostname: redis
+    networks:
+      - demo      # same i linked the containers with this network demo
+    ports:
+      - "6379:6379" # default port for redis is 6379
+
+networks: # created the network for connecting two containers
+  demo:   # name of the network
+    driver: bridge  # this is the network driver we can use different option visit docker main website for this
